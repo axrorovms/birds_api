@@ -14,10 +14,6 @@ class BaseAbstractUser(AbstractBaseUser, PermissionsMixin):
     username_validator = UnicodeUsernameValidator()
     email_validator = EmailValidator()
 
-    first_name = CharField(_("first name"), max_length=150, blank=True)
-    last_name = CharField(_("last name"), max_length=150, blank=True)
-    phone = CharField(_("phone"), max_length=50, blank=True)
-    balance = DecimalField(_("balance"), max_digits=1000, decimal_places=2, default=0)
     image = ImageField(upload_to=upload_name, blank=True)
 
     email = EmailField(_("email"),
@@ -35,8 +31,6 @@ class BaseAbstractUser(AbstractBaseUser, PermissionsMixin):
                          error_messages={"unique": _("A user with that username already exists.")},
                          )
 
-    subscription = BooleanField(_('subscription'), default=False)
-
     is_staff = BooleanField(_("staff status"),
                             default=False,
                             help_text=_("Designates whether the user can log into this admin site."))
@@ -46,14 +40,6 @@ class BaseAbstractUser(AbstractBaseUser, PermissionsMixin):
                              help_text=_(
                                  "Designates whether this user should be treated as active. "
                                  "Unselect this instead of deleting accounts."))
-
-    is_moderator = BooleanField(_("moderator"),
-                                default=False,
-                                help_text=_(
-                                    "This specifies whether the user should be considered a moderator."
-                                    "Unselect this instead of deleting accounts."))
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)
 
     objects = BaseManagerUser()
 
@@ -70,9 +56,4 @@ class BaseAbstractUser(AbstractBaseUser, PermissionsMixin):
         super().clean()
         self.email = self.__class__.objects.normalize_email(self.email)
 
-    def get_full_name(self):
-        """
-        Return the first_name plus the last_name, with a space in between.
-        """
-        full_name = "%s %s" % (self.first_name, self.last_name)
-        return full_name.strip()
+

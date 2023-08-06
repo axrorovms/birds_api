@@ -3,14 +3,14 @@ from rest_framework import status
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from rest_framework.generics import CreateAPIView, GenericAPIView
+from rest_framework.generics import CreateAPIView, GenericAPIView, ListAPIView
 
 from users.models import User
+from users.models.seen import Seen
 from users.serializers import RegisterUserModelSerializer, CheckActivationSerializer, SendEmailResetSerializer
+from users.serializers.seen import SeenListModelSerializer
 from users.serializers.serializers import PasswordResetConfirmSerializer
 
-
-# Create your views here.
 
 class UserTokenObtainPairView(TokenObtainPairView):
     parser_classes = (FormParser, MultiPartParser)
@@ -65,3 +65,23 @@ class PasswordResetConfirmUpdateAPIView(GenericAPIView):
         user.password = make_password(password)
         user.save(update_fields=["password"])
         return Response(status=status.HTTP_200_OK)
+
+
+class SeenCreateAPIView(CreateAPIView):
+    queryset = Seen.objects.all()
+    parser_classes = (FormParser, MultiPartParser)
+
+    def create(self, request, *args, **kwargs):
+        seen, created = self.queryset.get_or_create(
+            bird_id=kwargs['bird_id'],
+            user_id=request.user.id
+        )
+        if not created:
+            seen.delete()
+            return Response({"message": "deleted"})
+        return Response({"message": "added"}, status=status.HTTP_201_CREATED)
+
+
+class SeenListAPIView(ListAPIView):
+    queryset = Seen.objects.all()
+    serializer_class = SeenListModelSerializer

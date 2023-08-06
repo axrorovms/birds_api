@@ -11,9 +11,9 @@ from birds.urls import app_name as birds_app_name
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Snippets API",
+        title="BIRDS API",
         default_version='v1',
-        description="Test description",
+        description="Api about birds with auth",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@snippets.local"),
         license=openapi.License(name="BSD License"),

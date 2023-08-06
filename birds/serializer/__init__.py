@@ -1,0 +1,1 @@
+from .birds_serializer import BirdsCreateModelSerializer
